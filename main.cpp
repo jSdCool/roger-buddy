@@ -11,6 +11,8 @@ using namespace std;
 int screenWidth = 800;
 int screenHeight = 450;
 
+raylib::Vector2 internalWindowPos;
+
 Vector2 myVecToRayVec(myVector v) {
     return {v.x,v.y};
 }
@@ -28,6 +30,7 @@ int main() {
 #else
     SetTargetFPS(60);   // Set our game to run at 60 frames-per-second
 
+    internalWindowPos = window.GetPosition();
     // Main game loop
     while (!window.ShouldClose()){    // Detect window close button or ESC key
         UpdateDrawFrame(window);
@@ -42,25 +45,26 @@ void UpdateDrawFrame(raylib::Window &window) {
     // Update
 
     //move the window to the mouse slowly
-    float windowVelocity = 10;
+    float windowVelocity = 2;
 
     raylib::Vector2 mousePos = myVecToRayVec(getScreenMousePosition());
 
-    raylib::Vector2 winPos = window.GetPosition();
+
     raylib::Vector2 winSize = window.GetSize();
 
     raylib::Vector2 targetPos = mousePos - (winSize/2.0f);
 
-    float dist = targetPos.Distance(winPos);
-    if (dist > 30 ) {
-        float direction = atan2(targetPos.y-winPos.y,targetPos.x-winPos.x);
+    float dist = targetPos.Distance(internalWindowPos);
+    if (dist > 40 ) {
+        float direction = atan2(targetPos.y-internalWindowPos.y,targetPos.x-internalWindowPos.x);
 
         raylib::Vector2 travel = {cos(direction),sin(direction)};
         travel *= windowVelocity;
 
-        raylib::Vector2 newPos = winPos + travel;
+        raylib::Vector2 newPos = internalWindowPos + travel;
 
-        window.SetPosition(newPos);//this intergizes the position so small angles dont work well
+        window.SetPosition(newPos);//this uses the raw int of the pos so it can be weird
+        internalWindowPos = newPos;
     }
 
     // Draw
