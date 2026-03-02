@@ -29,6 +29,10 @@ if (NOT raylib_cpp_FOUND)
     FetchContent_MakeAvailable(raylib_cpp)
 endif()
 
+add_custom_target(copy_assets
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data
+)
+
 # This is the main part:
 set(SOURCES main.cpp
         mousePosition.cpp
@@ -40,6 +44,8 @@ if (LINUX)
     find_package(X11 REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE X11)
 endif ()
+
+add_dependencies(${PROJECT_NAME} copy_assets)
 
 # Web Configurations
 if (${PLATFORM} STREQUAL "Web")

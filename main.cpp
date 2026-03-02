@@ -8,10 +8,11 @@
 
 using namespace std;
 
-int screenWidth = 800;
-int screenHeight = 450;
+int screenWidth = 300;
+int screenHeight = 300;
 
 raylib::Vector2 internalWindowPos;
+raylib::Texture2D roger1;
 
 Vector2 myVecToRayVec(myVector v) {
     return {v.x,v.y};
@@ -24,6 +25,10 @@ int main() {
     //transparent background and no title bar / edge shaddow
     unsigned int windowFlags = FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED;
     raylib::Window window(screenWidth, screenHeight, "Roger Buddy", windowFlags);
+
+    roger1 = raylib::Texture2D("data/r1.png");
+
+    window.SetIcon(roger1);
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 0, 1);
@@ -76,8 +81,8 @@ void UpdateDrawFrame(raylib::Window &window) {
 
 
     DrawRectangle(0, 0, screenWidth, 15, WHITE);
+    roger1.Draw(0,40);
 
-    DrawText("Congrats! You created your first raylib-cpp window!", 160, 200, 20, LIGHTGRAY);
 
     EndDrawing();
 
