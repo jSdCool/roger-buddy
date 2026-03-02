@@ -17,6 +17,7 @@ raylib::Texture2D roger1;
 int frame = 0;
 int counter =0;
 vector<raylib::Texture2D> rogerSwim;
+vector<raylib::Texture2D> rogerSwimFlipped;
 constexpr float SWIM_ANGLE_OFFSET = DEG2RAD * 30;
 
 Vector2 myVecToRayVec(myVector v) {
@@ -34,8 +35,12 @@ int main() {
     roger1 = raylib::Texture2D("data/r1.png");
 
     rogerSwim.reserve(10);
+    rogerSwimFlipped.reserve(10);
     for (int i=0;i<10;i++) {
         rogerSwim.emplace_back("data/rc"+to_string(i+1)+".png");
+        raylib::Image toFlip("data/rc"+to_string(i+1)+".png");
+        toFlip.FlipHorizontal();
+        rogerSwimFlipped.emplace_back(toFlip);
     }
 
     window.SetIcon(roger1);
@@ -81,19 +86,35 @@ void UpdateDrawFrame(raylib::Window &window) {
 
         window.SetPosition(newPos);//this uses the raw int of the pos so it can be weird
         internalWindowPos = newPos;
+
+        //animation counter, only if moving
+        counter++;
+        if (counter == 9) {
+            counter = 0;
+            frame++;
+            if (frame == 10) {
+                frame = 0;
+            }
+        }
     }
 
     float swimAngle = direction - SWIM_ANGLE_OFFSET;
-    swimAngle *= RAD2DEG;
 
-    counter++;
-    if (counter == 9) {
-        counter = 0;
-        frame++;
-        if (frame == 10) {
-            frame = 0;
+
+
+    bool flip = swimAngle > DEG2RAD*90 - SWIM_ANGLE_OFFSET || swimAngle < -DEG2RAD*90 - SWIM_ANGLE_OFFSET;
+
+    if (flip) {
+        if (swimAngle > 0 ) {
+            swimAngle -= PI - 2*SWIM_ANGLE_OFFSET;
+        } else {
+            swimAngle += PI + 2*SWIM_ANGLE_OFFSET;
         }
     }
+
+    swimAngle *= RAD2DEG;
+
+
 
     // Draw
     BeginDrawing();
@@ -111,10 +132,14 @@ void UpdateDrawFrame(raylib::Window &window) {
         dst.x = -2;
         dst.y = 9;
     }
-    dst.x+=125;
-    dst.y+=125;
-    rogerSwim[frame].Draw(Rectangle{0.0f,0.0f,static_cast<float>(rogerSwim[frame].width),static_cast<float>(rogerSwim[frame].height)},dst,{100,100},swimAngle);
-
+    dst.x+=static_cast<float>(window.GetWidth())/2;
+    dst.y+=static_cast<float>(window.GetHeight())/2;
+    // bool flip = false;
+    if (flip) {
+        rogerSwimFlipped[frame].Draw(Rectangle{0.0f,0.0f,static_cast<float>(rogerSwim[frame].width),static_cast<float>(rogerSwim[frame].height)},dst,{100,100},swimAngle);
+    }else {
+        rogerSwim[frame].Draw(Rectangle{0.0f,0.0f,static_cast<float>(rogerSwim[frame].width),static_cast<float>(rogerSwim[frame].height)},dst,{100,100},swimAngle);
+    }
 
     EndDrawing();
 
