@@ -41,18 +41,39 @@ int main() {
 void UpdateDrawFrame(raylib::Window &window) {
     // Update
 
+    //move the window to the mouse slowly
+    float windowVelocity = 10;
+
+    raylib::Vector2 mousePos = myVecToRayVec(getScreenMousePosition());
+
+    raylib::Vector2 winPos = window.GetPosition();
+    raylib::Vector2 winSize = window.GetSize();
+
+    raylib::Vector2 targetPos = mousePos - (winSize/2.0f);
+
+    float dist = targetPos.Distance(winPos);
+    if (dist > 30 ) {
+        float direction = atan2(targetPos.y-winPos.y,targetPos.x-winPos.x);
+
+        raylib::Vector2 travel = {cos(direction),sin(direction)};
+        travel *= windowVelocity;
+
+        raylib::Vector2 newPos = winPos + travel;
+
+        window.SetPosition(newPos);//this intergizes the position so small angles dont work well
+    }
+
     // Draw
     BeginDrawing();
 
     //completely transparent background
     ClearBackground({0,0,0,0});
 
-    Vector2 mousePos = myVecToRayVec(getScreenMousePosition());
+
 
     DrawRectangle(0, 0, screenWidth, 15, WHITE);
 
     DrawText("Congrats! You created your first raylib-cpp window!", 160, 200, 20, LIGHTGRAY);
-    raylib::DrawText("Mouse pos: "+to_string(mousePos.x)+" "+to_string(mousePos.y),106,250,20,GREEN);
 
     EndDrawing();
 
