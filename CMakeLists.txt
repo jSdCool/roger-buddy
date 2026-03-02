@@ -30,10 +30,16 @@ if (NOT raylib_cpp_FOUND)
 endif()
 
 # This is the main part:
-set(SOURCES main.cpp)
+set(SOURCES main.cpp
+        mousePosition.cpp
+        mousePosition.hpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 target_link_libraries(${PROJECT_NAME} PUBLIC raylib raylib_cpp)
+if (LINUX)
+    find_package(X11 REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PRIVATE X11)
+endif ()
 
 # Web Configurations
 if (${PLATFORM} STREQUAL "Web")
