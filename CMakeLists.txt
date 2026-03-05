@@ -33,12 +33,22 @@ add_custom_target(copy_assets
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data
 )
 
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+    enable_language(RC)
+endif()
+
 # This is the main part:
 set(SOURCES main.cpp
         mousePosition.cpp
         mousePosition.hpp
         TargetDestination.cpp
         TargetDestination.hpp)
+
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+#    add the exe icon for windows
+    set(SOURCES ${SOURCES} app_icon.rc)
+endif ()
+
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 target_link_libraries(${PROJECT_NAME} PUBLIC raylib raylib_cpp)
