@@ -2,6 +2,10 @@
 #include <iostream>
 #include <vector>
 #include "mousePosition.hpp"
+#include <ctime>
+#include <memory>
+
+#include "TargetDestination.hpp"
 
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>
@@ -14,19 +18,31 @@ int screenHeight = 250;
 
 raylib::Vector2 internalWindowPos;
 raylib::Texture2D roger1;
-int frame = 0;
+int animationFrame = 0;
 int counter =0;
 vector<raylib::Texture2D> rogerSwim;
 vector<raylib::Texture2D> rogerSwimFlipped;
 constexpr float SWIM_ANGLE_OFFSET = DEG2RAD * 30;
+unique_ptr<TargetDestination> currentTarget = make_unique<MouseDestination>();
+bool targetReached = false;
 
 Vector2 myVecToRayVec(myVector v) {
     return {v.x,v.y};
 }
 
+void setNewRandomTarget() {
+    int number = GetRandomValue(0,15);
+    if (number < 2) {
+        currentTarget = make_unique<MouseDestination>();
+    } else {
+        currentTarget = make_unique<PositionDestination>();
+    }
+}
+
 void UpdateDrawFrame(raylib::Window &window);
 
 int main() {
+    SetRandomSeed(time(nullptr));
 
     //transparent background and no title bar / edge shaddow
     unsigned int windowFlags = FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_TOPMOST;
@@ -65,18 +81,15 @@ void UpdateDrawFrame(raylib::Window &window) {
     // Update
 
     //move the window to the mouse slowly
-    float windowVelocity = 2;
-
-    raylib::Vector2 mousePos = myVecToRayVec(getScreenMousePosition());
-
+    float windowVelocity = 3;
 
     raylib::Vector2 winSize = window.GetSize();
 
-    raylib::Vector2 targetPos = mousePos - (winSize/2.0f);
+    raylib::Vector2 targetPos = currentTarget->getTargetPosition() - (winSize/2.0f);
 
     float dist = targetPos.Distance(internalWindowPos);
     float direction = atan2(targetPos.y-internalWindowPos.y,targetPos.x-internalWindowPos.x);
-    if (dist > 40 ) {
+    if (dist > 40 && !targetReached) {
 
 
         raylib::Vector2 travel = {cos(direction),sin(direction)};
@@ -89,12 +102,20 @@ void UpdateDrawFrame(raylib::Window &window) {
 
         //animation counter, only if moving
         counter++;
-        if (counter == 9) {
+        if (counter == 5) {
             counter = 0;
-            frame++;
-            if (frame == 10) {
-                frame = 0;
+            animationFrame++;
+            if (animationFrame == 10) {
+                animationFrame = 0;
             }
+        }
+    }else {
+        targetReached = true;
+        counter++;
+        if (counter >=70) {
+            setNewRandomTarget();
+            counter =0;
+            targetReached = false;
         }
     }
 
@@ -123,12 +144,9 @@ void UpdateDrawFrame(raylib::Window &window) {
     ClearBackground({0,0,0,0});
 
 
-
-    DrawRectangle(0, 0, screenWidth, 15, WHITE);
-
     //draw the swiming animation
     raylib::Rectangle dst {0.0f,0.0f,200.0f,200.0f};
-    if (frame == 9) {
+    if (animationFrame == 9) {
         dst.x = -2;
         dst.y = 9;
     }
@@ -136,9 +154,9 @@ void UpdateDrawFrame(raylib::Window &window) {
     dst.y+=static_cast<float>(window.GetHeight())/2;
     // bool flip = false;
     if (flip) {
-        rogerSwimFlipped[frame].Draw(Rectangle{0.0f,0.0f,static_cast<float>(rogerSwim[frame].width),static_cast<float>(rogerSwim[frame].height)},dst,{100,100},swimAngle);
+        rogerSwimFlipped[animationFrame].Draw(Rectangle{0.0f,0.0f,static_cast<float>(rogerSwim[animationFrame].width),static_cast<float>(rogerSwim[animationFrame].height)},dst,{100,100},swimAngle);
     }else {
-        rogerSwim[frame].Draw(Rectangle{0.0f,0.0f,static_cast<float>(rogerSwim[frame].width),static_cast<float>(rogerSwim[frame].height)},dst,{100,100},swimAngle);
+        rogerSwim[animationFrame].Draw(Rectangle{0.0f,0.0f,static_cast<float>(rogerSwim[animationFrame].width),static_cast<float>(rogerSwim[animationFrame].height)},dst,{100,100},swimAngle);
     }
 
     EndDrawing();

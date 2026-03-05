@@ -36,7 +36,9 @@ add_custom_target(copy_assets
 # This is the main part:
 set(SOURCES main.cpp
         mousePosition.cpp
-        mousePosition.hpp)
+        mousePosition.hpp
+        TargetDestination.cpp
+        TargetDestination.hpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 target_link_libraries(${PROJECT_NAME} PUBLIC raylib raylib_cpp)
