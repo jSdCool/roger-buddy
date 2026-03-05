@@ -1,0 +1,7 @@
+
+#ifndef ROGERBUDDY_MAIN_HPP
+#define ROGERBUDDY_MAIN_HPP
+
+int main();
+
+#endif //ROGERBUDDY_MAIN_HPP

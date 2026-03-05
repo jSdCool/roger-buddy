@@ -1,3 +1,4 @@
+#include "main.hpp" // for windows shenanigans
 #include "raylib-cpp.hpp"
 #include <iostream>
 #include <vector>

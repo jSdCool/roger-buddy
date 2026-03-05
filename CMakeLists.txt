@@ -39,14 +39,15 @@ endif()
 
 # This is the main part:
 set(SOURCES main.cpp
+        main.hpp
         mousePosition.cpp
         mousePosition.hpp
         TargetDestination.cpp
         TargetDestination.hpp)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
-#    add the exe icon for windows
-    set(SOURCES ${SOURCES} app_icon.rc)
+#    add the exe icon for windows and the fancy windows main function
+    set(SOURCES WIN32 ${SOURCES} winMain.cpp app_icon.rc)
 endif ()
 
 add_executable(${PROJECT_NAME} ${SOURCES})
