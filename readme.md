@@ -23,7 +23,7 @@ Build:
 - Open a terminal / command prompt inside the build folder
 - In the terminal run `cmake ..` this may take a while to resolve dependencies 
 - In that same terminal run `cmake --build . --config Release`
-- Ensure the data folder is in the same folder as your generated executable
+- Ensure the data folder is in the same folder as your generated executable  
 Your exe is now ready simply double click it in file explorer or run it from the command line
 
 Or, load this project into your favorite C++ IDE and let it do all the work for you
