@@ -25,6 +25,7 @@ vector<raylib::Texture2D> rogerSwimFlipped;
 constexpr float SWIM_ANGLE_OFFSET = DEG2RAD * 30;
 unique_ptr<TargetDestination> currentTarget = make_unique<MouseDestination>();
 bool targetReached = false;
+bool running = true;
 
 Vector2 myVecToRayVec(myVector v) {
     return {v.x,v.y};
@@ -68,7 +69,7 @@ int main() {
 
     internalWindowPos = window.GetPosition();
     // Main game loop
-    while (!window.ShouldClose()){    // Detect window close button or ESC key
+    while (!window.ShouldClose() && running){    // Detect window close button or ESC key
         UpdateDrawFrame(window);
     }
 #endif
@@ -138,7 +139,7 @@ void UpdateDrawFrame(raylib::Window &window) {
 
 
     // Draw
-    BeginDrawing();
+    window.BeginDrawing();
 
     //completely transparent background
     ClearBackground({0,0,0,0});
@@ -159,6 +160,27 @@ void UpdateDrawFrame(raylib::Window &window) {
         rogerSwim[animationFrame].Draw(Rectangle{0.0f,0.0f,static_cast<float>(rogerSwim[animationFrame].width),static_cast<float>(rogerSwim[animationFrame].height)},dst,{100,100},swimAngle);
     }
 
-    EndDrawing();
+    //close button
+    raylib::Vector2 windowMousePos = raylib::Mouse::GetPosition();
+
+    if (windowMousePos.x <= 90 && windowMousePos.y <= 90 && window.IsCursorOnScreen()) {
+        Color rectColor = {100,100,100,100};
+        raylib::Rectangle closeRect{0,0,40,40};
+        if (closeRect.CheckCollision(windowMousePos)) {
+            rectColor = {60,60,60,190};
+        }
+        closeRect.Draw(rectColor);
+        raylib::Text closeText("X");
+        closeText.color = BLACK;
+        closeText.fontSize = 30;
+        closeText.Draw(10,10);
+
+        if (closeRect.CheckCollision(windowMousePos) && raylib::Mouse::IsButtonPressed(MOUSE_BUTTON_LEFT)) {
+            running = false;
+        }
+
+    }
+
+    window.EndDrawing();
 
 }

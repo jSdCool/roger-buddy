@@ -26,7 +26,7 @@ PositionDestination::PositionDestination() {
     raylib::Vector2 monitorPos = GetMonitorPosition(monitor);
     raylib::Vector2 newPos{static_cast<float>(GetRandomValue(0, width)),static_cast<float>(GetRandomValue(0, height))};
     newPos += monitorPos;
-    std::cout << "targeting position: " << newPos.x << " "<< newPos.y << " Width: "<< width << " height: "<<height << " monitor: "<<monitor << std::endl;
+    // std::cout << "targeting position: " << newPos.x << " "<< newPos.y << " Width: "<< width << " height: "<<height << " monitor: "<<monitor << std::endl;
     target = newPos;
 }
 
